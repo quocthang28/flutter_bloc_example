@@ -43,6 +43,7 @@ dependencies:
   auto_route: 3.2.4
   velocity_x: ^3.4.0
   rxdart: ^0.27.3
+  persistent_bottom_nav_bar: ^4.0.2
 
 dev_dependencies:
   flutter_test:
