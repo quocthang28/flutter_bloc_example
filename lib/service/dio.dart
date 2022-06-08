@@ -12,16 +12,16 @@ class DioModule {
     }
 
     BaseOptions options = BaseOptions(
-      //baseUrl: 'http://10.0.2.2:1337/',
+      baseUrl: 'http://10.0.2.2:3333/',
       //baseUrl: 'http://192.168.1.101:1337' // local address
       //baseUrl: 'https://testingservices321.azurewebsites.net' //cloud
-      baseUrl: 'https://jsonplaceholder.typicode.com',
+      //baseUrl: 'https://jsonplaceholder.typicode.com',
     );
 
     _dio = Dio(options);
 
-    _dio!.interceptors.add(PrettyDioLogger(
-        request: true, requestBody: false, responseBody: false, requestHeader: false));
+    _dio!.interceptors
+        .add(PrettyDioLogger(request: true, requestBody: false, responseBody: false, requestHeader: false));
 
     return _dio!;
   }
