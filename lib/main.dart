@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
+        debugShowCheckedModeBanner: false,
         //home: const UserPosts(title: 'Flutter Demo Home Page'),
         routerDelegate: GetIt.I<AppRouter>().delegate(),
         routeInformationParser: GetIt.I<AppRouter>().defaultRouteParser(),

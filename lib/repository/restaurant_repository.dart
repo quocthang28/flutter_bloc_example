@@ -1,5 +1,6 @@
 import 'package:flutter_bloc_example/model/restaurant_menu/restaurant_menu.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/comment.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
 import 'package:flutter_bloc_example/service/restaurant_service/restaurant_service.dart';
 import 'package:get_it/get_it.dart';
@@ -17,5 +18,9 @@ class RestaurantRepository {
 
   Future<ResComment> getResComment(String resId) {
     return _restaurantService.getComments(resId);
+  }
+
+  Future<RecommendedRestaurant> getRecommendedRestaurant(String resId) {
+    return _restaurantService.getRecommendedRestaurants(resId);
   }
 }

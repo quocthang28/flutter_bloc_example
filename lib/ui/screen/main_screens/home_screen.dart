@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
 import 'package:flutter_bloc_example/navigation/route_name.dart';
 import 'package:flutter_bloc_example/repository/restaurant_repository.dart';

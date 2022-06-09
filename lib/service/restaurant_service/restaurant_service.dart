@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc_example/constant/api_endpoint.dart';
 import 'package:flutter_bloc_example/model/restaurant_menu/restaurant_menu.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/comment.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -20,4 +21,7 @@ abstract class RestaurantService {
 
   @GET('/comment/{resId}')
   Future<ResComment> getComments(@Path() String resId);
+
+  @GET('/restaurant/recommend/{resId}')
+  Future<RecommendedRestaurant> getRecommendedRestaurants(@Path() String resId);
 }

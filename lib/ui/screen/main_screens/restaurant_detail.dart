@@ -1,9 +1,13 @@
+import 'dart:ffi';
 import 'dart:math';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_example/model/restaurant_menu/restaurant_menu.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/comment.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
+import 'package:flutter_bloc_example/navigation/app_router.gr.dart';
 import 'package:flutter_bloc_example/repository/restaurant_repository.dart';
 import 'package:flutter_bloc_example/ui/common_component/button.dart';
 import 'package:flutter_bloc_example/ui/ui_constant/app_color.dart';
@@ -24,8 +28,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   late final Menu menu;
   late final ResComment comments;
+  late final RecommendedRestaurant recommendedRestaurant;
+
   bool isLoadingMenu = true;
   bool isLoadingComments = true;
+  bool isLoadingRecommendedRestaurants = true;
 
   @override
   void initState() {
@@ -40,6 +47,13 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       comments = value;
       setState(() {
         isLoadingComments = false;
+      });
+    });
+
+    _restaurantRepository.getRecommendedRestaurant(widget.res.sId!).then((value) {
+      recommendedRestaurant = value;
+      setState(() {
+        isLoadingRecommendedRestaurants = false;
       });
     });
 
@@ -109,7 +123,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               children: [
                 Align(
                     alignment: Alignment.centerLeft,
-                    child: 'Đang mở của'.text.size(20).bold.color(AppColor.mainColor).make()),
+                    child: 'Đang mở của'.text.size(18).bold.color(AppColor.mainColor).make()),
                 AuthButton(onTap: () {}, label: 'Save').pOnly(right: 10)
               ],
             ).px(15).pOnly(top: 15),
@@ -127,9 +141,9 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               ],
             ).px(15),
             Divider(
-              color: Colors.grey[400],
-              height: 8,
-              thickness: 8,
+              color: Colors.grey[300],
+              height: 4,
+              thickness: 4,
             ).py(10),
             Row(
               children: <Widget>[
@@ -144,8 +158,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
             ).px(5),
             Row(
               children: <Widget>[
-                '${Random().nextInt(10).toString()}km'.text.size(18).green900.make(),
-                '(từ vị trí hiện tại)'.text.size(18).color(Colors.black54).make()
+                '${Random().nextInt(10).toString()}km'.text.size(14).green900.make(),
+                '(từ vị trí hiện tại)'.text.size(14).color(Colors.black54).make()
               ],
             ).px(40),
             10.heightBox,
@@ -157,13 +171,13 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   size: 30,
                 ),
                 5.widthBox,
-                widget.res.phone!.text.size(18).make(),
+                widget.res.phone!.text.size(16).make(),
               ],
             ).px(5),
             Divider(
-              color: Colors.grey[400],
-              height: 8,
-              thickness: 8,
+              color: Colors.grey[300],
+              height: 4,
+              thickness: 4,
             ).py(10),
             Align(
                     alignment: Alignment.centerLeft,
@@ -182,10 +196,28 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         .toList(),
                   ),
             Divider(
-              color: Colors.grey[400],
-              height: 8,
-              thickness: 8,
+              color: Colors.grey[300],
+              height: 4,
+              thickness: 4,
             ).py(10),
+            Align(
+                    alignment: Alignment.centerLeft,
+                    child: 'Quán ăn tương tự'.text.color(AppColor.mainColor).semiBold.size(18).make())
+                .px(10),
+            isLoadingRecommendedRestaurants
+                ? const SizedBox.shrink()
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      children: recommendedRestaurant.data!.map((e) => RRestaurantCard(res: e)).toList(),
+                    ),
+                  ).p(5),
+            Divider(
+              color: Colors.grey[300],
+              height: 4,
+              thickness: 4,
+            ).pOnly(bottom: 10),
             Align(
                     alignment: Alignment.centerLeft,
                     child: 'Đánh giá'.text.color(AppColor.mainColor).semiBold.size(18).make())
@@ -237,6 +269,62 @@ class CommentTile extends StatelessWidget {
         Align(alignment: Alignment.centerLeft, child: commentData.title!.text.semiBold.size(16).make()).p(10),
         Align(alignment: Alignment.centerLeft, child: commentData.content!.text.size(15).make()).px(10),
       ],
+    );
+  }
+}
+
+class RRestaurantCard extends StatelessWidget {
+  const RRestaurantCard({Key? key, required this.res}) : super(key: key);
+
+  final Data res;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.pushRoute(RestaurantDetailRoute(res: res)),
+      child: SizedBox(
+        width: 200,
+        height: 235,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Image.network(
+                res.photos!.first,
+                width: 200,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+            5.heightBox,
+            res.name!.text.size(15).semiBold.ellipsis.make(),
+            5.heightBox,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const Icon(Icons.star_rate, color: Colors.yellow),
+                    res.rating!.toString().text.make(),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    res.openTime!.isNotEmpty ? res.openTime!.first.text.make() : const SizedBox.shrink(),
+                    res.openTime!.isNotEmpty ? ' - '.text.make() : const SizedBox.shrink(),
+                    res.openTime!.isNotEmpty ? res.openTime!.last.text.make() : const SizedBox.shrink(),
+                    5.widthBox,
+                  ],
+                ),
+              ],
+            ),
+            5.heightBox,
+            res.addressDetail!.text.size(13).color(Colors.black54).overflow(TextOverflow.visible).make(),
+          ],
+        ).p(5),
+      ),
     );
   }
 }
