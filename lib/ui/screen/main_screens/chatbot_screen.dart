@@ -227,11 +227,10 @@ class ChatBubble extends StatelessWidget {
         ),
         10.heightBox,
         message.hasContent
-            //? 'aaa'.text.make()
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: saved.data!
-                    .sublist(0, Random().nextInt(saved.data!.length))
+                    .sublist(0, Random().nextInt(saved.data!.length < 5 ? saved.data!.length : 2))
                     .map((e) => GestureDetector(
                           onTap: () => context.pushRoute(RestaurantDetailRoute(res: e)),
                           child: AppCard(

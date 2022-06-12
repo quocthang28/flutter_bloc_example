@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/restaurant_v2.dart';
 import 'package:flutter_bloc_example/navigation/route_name.dart';
 import 'package:flutter_bloc_example/repository/restaurant_repository.dart';
 import 'package:flutter_bloc_example/ui/screen/main_screens/restaurant_detail.dart';
+import 'package:flutter_bloc_example/ui/screen/main_screens/search_screen.dart';
 import 'package:flutter_bloc_example/ui/ui_constant/app_color.dart';
 import 'package:get_it/get_it.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -25,9 +27,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final RestaurantRepository _restaurantRepository = GetIt.I<RestaurantRepository>();
 
-  late final Restaurant nearest;
-  late final Restaurant mostViews;
+  late final RestaurantV2 nearest;
+  late final RestaurantV2 mostViews;
   late final Restaurant recommended;
+
+  final TextEditingController textEditingController = TextEditingController();
 
   bool isLoading1 = true;
   bool isLoading2 = true;
@@ -35,18 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _restaurantRepository
-        .getRestaurant(Random().nextInt(10).toString(), '10', Random().nextInt(10).toString())
-        .then((value) => nearest = value)
-        .then((value) => setState(() {
-              isLoading1 = false;
-            }));
-    _restaurantRepository
-        .getRestaurant(Random().nextInt(10).toString(), '10', Random().nextInt(10).toString())
-        .then((value) => mostViews = value)
-        .then((value) => setState(() {
-              isLoading2 = false;
-            }));
+    _restaurantRepository.getNearbyRestaurants().then((value) => nearest = value).then((value) => setState(() {
+          isLoading1 = false;
+        }));
+    _restaurantRepository.getMostViewedRestaurants().then((value) => mostViews = value).then((value) => setState(() {
+          isLoading2 = false;
+        }));
     _restaurantRepository
         .getRestaurant(Random().nextInt(10).toString(), '10', Random().nextInt(10).toString())
         .then((value) => recommended = value)
@@ -73,6 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: TextField(
             onChanged: (value) {},
+            onSubmitted: (value) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SearchScreen(searchTerm: textEditingController.text)));
+            },
             maxLines: 1,
             style: const TextStyle(
               fontWeight: FontWeight.w400,
@@ -110,9 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               10.heightBox,
               const Header(title: 'Địa điểm gần bạn'),
-              isLoading1 ? const SizedBox.shrink() : RestaurantList(restaurants: nearest),
+              isLoading1 ? const SizedBox.shrink() : RestaurantListV2(restaurants: nearest),
               const Header(title: 'Quán được xem nhiều'),
-              isLoading2 ? const SizedBox.shrink() : RestaurantList(restaurants: mostViews),
+              isLoading2 ? const SizedBox.shrink() : RestaurantListV2(restaurants: mostViews),
               const Header(title: 'Gợi ý quán ngon'),
               isLoading3
                   ? const SizedBox.shrink()
@@ -148,6 +150,76 @@ class RestaurantList extends StatelessWidget {
         children: restaurants.data!.map((e) => RestaurantCard(res: e)).toList(),
       ),
     ).p(5);
+  }
+}
+
+class RestaurantListV2 extends StatelessWidget {
+  const RestaurantListV2({Key? key, required this.restaurants}) : super(key: key);
+
+  final RestaurantV2 restaurants;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: restaurants.data!.map((e) => RestaurantCardV2(res: e)).toList(),
+      ),
+    ).p(5);
+  }
+}
+
+class RestaurantCardV2 extends StatelessWidget {
+  const RestaurantCardV2({Key? key, required this.res}) : super(key: key);
+
+  final DataV2 res;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 200,
+      height: 235,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.network(
+              res.photos!.first,
+              width: 200,
+              height: 120,
+              fit: BoxFit.cover,
+            ),
+          ),
+          5.heightBox,
+          res.name!.text.size(15).semiBold.ellipsis.make(),
+          5.heightBox,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Icon(Icons.star_rate, color: Colors.yellow),
+                  res.rating!.toString().text.make(),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  res.openTime!.isNotEmpty ? res.openTime!.first.text.make() : const SizedBox.shrink(),
+                  res.openTime!.isNotEmpty ? ' - '.text.make() : const SizedBox.shrink(),
+                  res.openTime!.isNotEmpty ? res.openTime!.last.text.make() : const SizedBox.shrink(),
+                  5.widthBox,
+                ],
+              ),
+            ],
+          ),
+          5.heightBox,
+          res.addressDetail!.text.size(13).color(Colors.black54).overflow(TextOverflow.visible).make(),
+        ],
+      ).p(5),
+    );
   }
 }
 

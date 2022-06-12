@@ -80,6 +80,55 @@ class _RestaurantService implements RestaurantService {
     return value;
   }
 
+  @override
+  Future<RestaurantV2> getMostViewedRestaurants() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<RestaurantV2>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/restaurant/mostview',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = RestaurantV2.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<RestaurantV2> getNearbyRestaurants() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<RestaurantV2>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/restaurant/nearly',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = RestaurantV2.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<Restaurant> getRestaurantBySearchTerm(map) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(map);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<Restaurant>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'restaurant/search',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = Restaurant.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

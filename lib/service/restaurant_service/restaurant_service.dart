@@ -4,6 +4,7 @@ import 'package:flutter_bloc_example/model/restaurant_menu/restaurant_menu.dart'
 import 'package:flutter_bloc_example/model/restaurant_model/comment.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/recommended.dart';
 import 'package:flutter_bloc_example/model/restaurant_model/restaurant.dart';
+import 'package:flutter_bloc_example/model/restaurant_model/restaurant_v2.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'restaurant_service.g.dart';
@@ -24,4 +25,13 @@ abstract class RestaurantService {
 
   @GET('/restaurant/recommend/{resId}')
   Future<RecommendedRestaurant> getRecommendedRestaurants(@Path() String resId);
+
+  @POST('/restaurant/mostview')
+  Future<RestaurantV2> getMostViewedRestaurants();
+
+  @POST('/restaurant/nearly')
+  Future<RestaurantV2> getNearbyRestaurants();
+
+  @POST('restaurant/search')
+  Future<Restaurant> getRestaurantBySearchTerm(@Body() Map<String, dynamic> map);
 }

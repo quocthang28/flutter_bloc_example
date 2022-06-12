@@ -30,6 +30,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   late final ResComment comments;
   late final RecommendedRestaurant recommendedRestaurant;
 
+  bool hasComment = false;
+
+  final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController1 = TextEditingController();
+
   bool isLoadingMenu = true;
   bool isLoadingComments = true;
   bool isLoadingRecommendedRestaurants = true;
@@ -243,6 +248,95 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     ),
                   ),
             20.heightBox,
+            hasComment
+                ? Column(
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                                  child: Image.network(
+                                      'https://media-cdn.laodong.vn/Storage/NewsPortal/2021/3/26/892912/John-Wick-Phan-4.jpg'))
+                              .cornerRadius(40),
+                          8.widthBox,
+                          'BOY PRO VIP'.text.make(),
+                        ],
+                      ).p(10),
+                      Align(
+                              alignment: Alignment.centerLeft,
+                              child: _textEditingController1.text.text.semiBold.size(16).make())
+                          .p(10),
+                      Align(alignment: Alignment.centerLeft, child: _textEditingController.text.text.size(15).make())
+                          .px(10),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+            10.heightBox,
+            Align(
+                    alignment: Alignment.centerLeft,
+                    child: 'Nhập đánh giá/bình luận'.text.color(AppColor.mainColor).semiBold.size(18).make())
+                .px(10),
+            10.heightBox,
+            Column(
+              children: [
+                TextField(
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: _textEditingController1,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    hintText: 'Tiêu đề',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                    ),
+                  ),
+                ).p(10),
+                Row(
+                  children: [
+                    TextField(
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: _textEditingController,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        hintText: 'Bình luận',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.mainColor, width: 0.7),
+                        ),
+                      ),
+                    ).pOnly(left: 10).expand(),
+                    IconButton(
+                      onPressed: () async {
+                        // _textEditingController.clear();
+                        // _textEditingController1.clear();
+                        setState(() {
+                          hasComment = true;
+                        });
+                      },
+                      disabledColor: Colors.grey,
+                      icon: const Icon(
+                        Icons.send,
+                        color: AppColor.mainColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            30.heightBox,
           ],
         ),
       ),
